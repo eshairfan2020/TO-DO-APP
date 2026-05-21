@@ -3,20 +3,26 @@ import "./App.css";
 
 function App() {
   const [input, setInput] = useState("");
-  const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
+   useState("all")
 
-  // Load todos
-  useEffect(() => {
-    const savedTodos = localStorage.getItem("myTodos");
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
-    }
-  }, []);
+  // Load Todos
 
-  // Save todos
+ const [todos, setTodos] = useState(() => {
+  const savedTodos =
+    localStorage.getItem("myTodos");
+
+  return savedTodos 
+    ? JSON.parse(savedTodos)
+    : [];
+});
+
+  // Save Todos
   useEffect(() => {
-    localStorage.setItem("myTodos", JSON.stringify(todos));
+    localStorage.setItem(
+      "myTodos",
+      JSON.stringify(todos)
+    );
   }, [todos]);
 
   // Add Todo
@@ -35,15 +41,21 @@ function App() {
 
   // Delete Todo
   const handleDelete = (id) => {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    const updatedTodos = todos.filter(
+      (todo) => todo.id !== id
+    );
+
     setTodos(updatedTodos);
   };
 
-  // Toggle Todo
+  // Complete Todo
   const handleToggle = (id) => {
     const updatedTodos = todos.map((todo) =>
       todo.id === id
-        ? { ...todo, completed: !todo.completed }
+        ? {
+            ...todo,
+            completed: !todo.completed,
+          }
         : todo
     );
 
@@ -52,8 +64,14 @@ function App() {
 
   // Filter Todos
   const filteredTodos = todos.filter((todo) => {
-    if (filter === "completed") return todo.completed;
-    if (filter === "pending") return !todo.completed;
+    if (filter === "completed") {
+      return todo.completed;
+    }
+
+    if (filter === "pending") {
+      return !todo.completed;
+    }
+
     return true;
   });
 
@@ -62,12 +80,15 @@ function App() {
       <div className="todo-container">
         <h1>Todo Manager</h1>
 
+        {/* Input */}
         <div className="todo-input">
           <input
             type="text"
             placeholder="Add new task..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) =>
+              setInput(e.target.value)
+            }
           />
 
           <button onClick={handleAddTodo}>
@@ -75,38 +96,66 @@ function App() {
           </button>
         </div>
 
+        {/* Filters */}
         <div className="filters">
-          <button onClick={() => setFilter("all")}>
+          <button
+            onClick={() => setFilter("all")}
+          >
             All
           </button>
 
-          <button onClick={() => setFilter("completed")}>
+          <button
+            onClick={() =>
+              setFilter("completed")
+            }
+          >
             Completed
           </button>
 
-          <button onClick={() => setFilter("pending")}>
+          <button
+            onClick={() => setFilter("pending")}
+          >
             Pending
           </button>
         </div>
 
+        {/* Todo List */}
         <div className="todo-list">
           {filteredTodos.length === 0 ? (
-            <p className="empty">No tasks found</p>
+            <p className="empty">
+              No tasks found
+            </p>
           ) : (
             filteredTodos.map((todo) => (
-              <div className="todo-card" key={todo.id}>
-                <div
-                  className={`todo-text ${
-                    todo.completed ? "completed" : ""
-                  }`}
-                  onClick={() => handleToggle(todo.id)}
-                >
-                  {todo.title}
+              <div
+                className="todo-card"
+                key={todo.id}
+              >
+                <div className="left">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() =>
+                      handleToggle(todo.id)
+                    }
+                  />
+
+                  <span
+                    className={
+                      todo.completed
+                        ? "completed"
+                        : ""
+                    }
+                  >
+                    {todo.title}
+                  </span>
                 </div>
 
                 <button
                   className="delete-btn"
-                  onClick={() => handleDelete(todo.id)}
+                  onClick={() =>
+                    handleDelete(todo.id)
+                  }
                 >
                   Delete
                 </button>
